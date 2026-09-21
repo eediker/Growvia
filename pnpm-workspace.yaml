@@ -1,0 +1,9 @@
+packages:
+  - apps/*
+
+# Keep native CMake paths short on Windows instead of using nested .pnpm paths.
+nodeLinker: hoisted
+
+onlyBuiltDependencies:
+  - esbuild
+  - sharp

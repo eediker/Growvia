@@ -1,0 +1,21 @@
+{
+  "name": "kids-guide",
+  "private": true,
+  "packageManager": "pnpm@11.19.0",
+  "scripts": {
+    "start": "pnpm --filter @kids-guide/mobile start",
+    "web": "pnpm --filter @kids-guide/mobile web",
+    "android": "pnpm --filter @kids-guide/mobile android",
+    "android:metro": "pnpm --filter @kids-guide/mobile android:metro",
+    "android:prebuild": "pnpm --filter @kids-guide/mobile android:prebuild",
+    "ios": "pnpm --filter @kids-guide/mobile ios",
+    "typecheck": "pnpm --filter @kids-guide/mobile typecheck",
+    "test": "pnpm --filter @kids-guide/mobile test && node --test supabase/tests/rls.test.mjs",
+    "test:cloud": "node --test supabase/tests/rls.test.mjs",
+    "seed:generate": "node scripts/generate-supabase-seed.mjs",
+    "export:web": "pnpm --filter @kids-guide/mobile export:web"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.8"
+  }
+}

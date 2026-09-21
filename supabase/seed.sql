@@ -1,0 +1,374 @@
+-- Generated from shared/demo-content.json; run pnpm seed:generate to update.
+-- Sample content only. Existing content is never overwritten. No users or credentials.
+insert into public.kg_content(id, kind, status, area, min_age_months, max_age_months, duration_minutes, translations)
+select id, kind, status, area, "minAgeMonths", "maxAgeMonths", "durationMinutes", translations
+from jsonb_to_recordset($kgseed$[
+  {
+    "id": "activity-colors",
+    "kind": "activity",
+    "status": "published",
+    "area": "discovery",
+    "minAgeMonths": 12,
+    "maxAgeMonths": 95,
+    "durationMinutes": 10,
+    "translations": {
+      "tr": {
+        "title": "Renklerin peşinde",
+        "summary": "Evinizdeki renkleri birlikte fark etmek için küçük bir keşif.",
+        "materials": [],
+        "steps": [
+          "Birlikte mavi bir nesne bulun.",
+          "Nesneyi gösterin ve rengini söyleyin.",
+          "Çocuğunuzun başka bir nesneyi seçmesini bekleyin.",
+          "İlgi gösterdiği sürece başka renklerle devam edin."
+        ],
+        "body": "",
+        "parentTip": "Küçük çocuklar işaret edebilir; daha büyük çocuklar kendi renk avını hazırlayabilir.",
+        "safetyNote": "Küçük, keskin veya kırılabilir nesneleri kullanmayın."
+      },
+      "en": {
+        "title": "A little color hunt",
+        "summary": "A small adventure to notice the colors around your home.",
+        "materials": [],
+        "steps": [
+          "Find something blue together.",
+          "Point to it and name its color.",
+          "Wait for your child to choose another object.",
+          "Explore another color while your child is interested."
+        ],
+        "body": "",
+        "parentTip": "Younger children can point; older children can create their own color hunt.",
+        "safetyNote": "Avoid small, sharp or breakable objects."
+      }
+    }
+  },
+  {
+    "id": "activity-leaves",
+    "kind": "activity",
+    "status": "published",
+    "area": "nature",
+    "minAgeMonths": 24,
+    "maxAgeMonths": 95,
+    "durationMinutes": 15,
+    "translations": {
+      "tr": {
+        "title": "Yaprak dedektifleri",
+        "summary": "Bir yürüyüşü merak dolu bir keşfe dönüştürün.",
+        "materials": [
+          "Büyük ve temiz yapraklar"
+        ],
+        "steps": [
+          "Güvenli bir alanda iki farklı yaprak bulun.",
+          "Renklerine ve şekillerine birlikte bakın.",
+          "Benzer ve farklı yönlerini konuşun.",
+          "Yaprakların hayali bir ağacını çizin."
+        ],
+        "body": "",
+        "parentTip": "Cevabı söylemeden önce çocuğunuzun ne fark ettiğini dinleyin.",
+        "safetyNote": "Bilinmeyen bitkileri koparmayın veya ağza götürmeyin. Sonrasında ellerinizi yıkayın."
+      },
+      "en": {
+        "title": "Little leaf detectives",
+        "summary": "Turn a familiar walk into an adventure full of curiosity.",
+        "materials": [
+          "Large, clean leaves"
+        ],
+        "steps": [
+          "Find two different leaves in a safe place.",
+          "Look at their colors and shapes together.",
+          "Talk about what is similar and different.",
+          "Draw an imaginary tree for your leaves."
+        ],
+        "body": "",
+        "parentTip": "Listen to what your child notices before offering your own answer.",
+        "safetyNote": "Do not pick unknown plants or put leaves in the mouth. Wash hands afterwards."
+      }
+    }
+  },
+  {
+    "id": "activity-tower",
+    "kind": "activity",
+    "status": "published",
+    "area": "movement",
+    "minAgeMonths": 12,
+    "maxAgeMonths": 47,
+    "durationMinutes": 10,
+    "translations": {
+      "tr": {
+        "title": "Birlikte bir kule",
+        "summary": "Yumuşak bloklarla yapın, yıkın ve yeniden deneyin.",
+        "materials": [
+          "Yaşa uygun büyük, yumuşak bloklar"
+        ],
+        "steps": [
+          "Yerde rahat bir alan hazırlayın.",
+          "İki büyük bloğu üst üste koyun.",
+          "Çocuğunuzu bir blok eklemeye davet edin.",
+          "Kule yıkıldığında birlikte yeniden başlayın."
+        ],
+        "body": "",
+        "parentTip": "Sonuçtan çok birlikte deneme anına odaklanın.",
+        "safetyNote": "Yutulabilecek küçük parçalar kullanmayın. Çocuğun yanında kalın."
+      },
+      "en": {
+        "title": "Build a little tower",
+        "summary": "Build, tumble and try again with soft blocks.",
+        "materials": [
+          "Large, age-appropriate soft blocks"
+        ],
+        "steps": [
+          "Make a comfortable space on the floor.",
+          "Stack two large blocks.",
+          "Invite your child to add one.",
+          "When it tumbles, begin again together."
+        ],
+        "body": "",
+        "parentTip": "Enjoy trying together rather than aiming for a perfect tower.",
+        "safetyNote": "Avoid small parts that could be swallowed. Stay alongside your child."
+      }
+    }
+  },
+  {
+    "id": "activity-story",
+    "kind": "activity",
+    "status": "published",
+    "area": "language",
+    "minAgeMonths": 36,
+    "maxAgeMonths": 95,
+    "durationMinutes": 15,
+    "translations": {
+      "tr": {
+        "title": "Üç nesne, bir hikâye",
+        "summary": "Gündelik nesnelerle ortak bir hikâye oluşturun.",
+        "materials": [
+          "Üç güvenli ev eşyası"
+        ],
+        "steps": [
+          "Üç nesneyi birlikte seçin.",
+          "Bir nesneyle hikâyeye başlayın.",
+          "Diğer nesnenin hikâyeye nasıl katıldığını sorun.",
+          "Sonunu birlikte hayal edin."
+        ],
+        "body": "",
+        "parentTip": "Çocuğunuzun fikrini takip edin; hikâyenin doğru bir sonu yok.",
+        "safetyNote": "Keskin, ağır veya kırılabilir nesneler seçmeyin."
+      },
+      "en": {
+        "title": "Three things, one story",
+        "summary": "Make up a shared story using everyday objects.",
+        "materials": [
+          "Three safe household objects"
+        ],
+        "steps": [
+          "Choose three objects together.",
+          "Begin a story with one of them.",
+          "Ask how the next object joins the story.",
+          "Imagine an ending together."
+        ],
+        "body": "",
+        "parentTip": "Follow your child's ideas; there is no single correct ending.",
+        "safetyNote": "Avoid sharp, heavy or breakable objects."
+      }
+    }
+  },
+  {
+    "id": "activity-feelings",
+    "kind": "activity",
+    "status": "published",
+    "area": "connection",
+    "minAgeMonths": 24,
+    "maxAgeMonths": 95,
+    "durationMinutes": 5,
+    "translations": {
+      "tr": {
+        "title": "Duygulara merhaba",
+        "summary": "Kısa bir sohbetle bugünkü duygularınıza yer açın.",
+        "materials": [],
+        "steps": [
+          "Bugün sizi mutlu eden küçük bir şeyi paylaşın.",
+          "Çocuğunuzun isterse kendi anını anlatmasını bekleyin.",
+          "Duygusunu kendi sözlerinizle tekrar edin.",
+          "Konuşmak istemiyorsa birlikte sessizce oturun."
+        ],
+        "body": "",
+        "parentTip": "Paylaşmak tamamen isteğe bağlı olsun.",
+        "safetyNote": "Rahatsızlık veren konuları anlatması için zorlamayın."
+      },
+      "en": {
+        "title": "Say hello to feelings",
+        "summary": "Make space for today's feelings in a short conversation.",
+        "materials": [],
+        "steps": [
+          "Share one small thing that made you happy today.",
+          "Invite your child to share a moment if they wish.",
+          "Reflect their feeling in your own words.",
+          "If they prefer not to talk, sit quietly together."
+        ],
+        "body": "",
+        "parentTip": "Keep sharing entirely optional.",
+        "safetyNote": "Do not pressure your child to talk about something upsetting."
+      }
+    }
+  },
+  {
+    "id": "activity-path",
+    "kind": "activity",
+    "status": "published",
+    "area": "movement",
+    "minAgeMonths": 36,
+    "maxAgeMonths": 95,
+    "durationMinutes": 10,
+    "translations": {
+      "tr": {
+        "title": "Hayali patika",
+        "summary": "Düz bir çizgiyi eğlenceli bir yürüyüşe dönüştürün.",
+        "materials": [
+          "Zemine uygun kâğıt bant"
+        ],
+        "steps": [
+          "Kaymayan zemine kısa bir çizgi yapın.",
+          "Çizginin yanında yavaşça yürüyün.",
+          "Çocuğunuzu kendi yürüyüşünü seçmeye davet edin.",
+          "İsterse patikaya bir dönüş ekleyin."
+        ],
+        "body": "",
+        "parentTip": "Hareketleri çocuğunuzun rahatlığına göre uyarlayın.",
+        "safetyNote": "Engelsiz, kaymayan bir zemin kullanın. Denge desteği için yakında kalın."
+      },
+      "en": {
+        "title": "An imaginary path",
+        "summary": "Turn a simple line into a playful walk.",
+        "materials": [
+          "Floor-safe paper tape"
+        ],
+        "steps": [
+          "Make a short line on a non-slip floor.",
+          "Walk slowly alongside it.",
+          "Invite your child to choose their own way to move.",
+          "Add a turn if they would like one."
+        ],
+        "body": "",
+        "parentTip": "Adapt the movements to your child's comfort.",
+        "safetyNote": "Use a clear, non-slip floor and stay close to offer support."
+      }
+    }
+  },
+  {
+    "id": "story-cloud",
+    "kind": "story",
+    "status": "published",
+    "area": "language",
+    "minAgeMonths": 12,
+    "maxAgeMonths": 95,
+    "durationMinutes": 5,
+    "translations": {
+      "tr": {
+        "title": "Küçük bulutun molası",
+        "summary": "Yavaşlamaya yer açan kısa bir birlikte okuma anı.",
+        "materials": [],
+        "steps": [],
+        "body": "Küçük bulut bütün sabah gökyüzünde dolaşmıştı. Aşağıda bir ağaç gördü.\n\n“Biraz burada kalabilir miyim?” diye sordu.\n\n“Elbette,” dedi ağaç. “Ben de rüzgârı dinliyorum.”\n\nBulut durdu. Yaprakların sesini duydu. Uzakta bir kuş kanat çırptı.\n\n“Hiçbir yere yetişmiyoruz,” dedi bulut gülümseyerek.\n\nBir süre birlikte gökyüzünü seyrettiler.",
+        "parentTip": "Okurken durup çocuğunuzun resimleri hayal etmesine veya sesleri taklit etmesine izin verin.",
+        "safetyNote": ""
+      },
+      "en": {
+        "title": "The little cloud takes a break",
+        "summary": "A short shared reading moment that makes room to slow down.",
+        "materials": [],
+        "steps": [],
+        "body": "The little cloud had wandered across the sky all morning. Down below, it spotted a tree.\n\n“May I stay here for a while?” it asked.\n\n“Of course,” said the tree. “I am listening to the wind.”\n\nThe cloud paused. It heard the leaves rustle. Far away, a bird fluttered its wings.\n\n“We do not have to rush anywhere,” said the cloud with a smile.\n\nFor a while, they watched the sky together.",
+        "parentTip": "Pause as you read and invite your child to imagine the pictures or copy the sounds.",
+        "safetyNote": ""
+      }
+    }
+  },
+  {
+    "id": "story-seed",
+    "kind": "story",
+    "status": "published",
+    "area": "nature",
+    "minAgeMonths": 24,
+    "maxAgeMonths": 95,
+    "durationMinutes": 6,
+    "translations": {
+      "tr": {
+        "title": "Minik tohumun bekleyişi",
+        "summary": "Bir bahçede sabır ve arkadaşlık üzerine kısa bir hikâye.",
+        "materials": [],
+        "steps": [],
+        "body": "Minik tohum toprağın altında bekliyordu. Yukarıdan yağmurun sesini duydu.\n\n“Henüz burada mısın?” diye sordu solucan.\n\n“Evet, acelem yok,” dedi tohum.\n\nGünler geçti. Bir sabah tohum küçük bir filiz uzattı. Solucan sevinçle kıpırdandı.\n\n“Hoş geldin!” dedi.\n\nFiliz güneşe doğru döndü. Büyümek için önünde daha pek çok gün vardı.",
+        "parentTip": "Hikâyeyi bitirmek zorunda değilsiniz; çocuğunuzun sorularıyla durabilirsiniz.",
+        "safetyNote": ""
+      },
+      "en": {
+        "title": "The tiny seed waits",
+        "summary": "A little garden story about patience and friendship.",
+        "materials": [],
+        "steps": [],
+        "body": "The tiny seed waited beneath the soil. Above, it heard the rain.\n\n“Are you still there?” asked a worm.\n\n“Yes. I am in no hurry,” said the seed.\n\nDays passed. One morning, the seed sent up a small shoot. The worm wriggled with delight.\n\n“Welcome!” it said.\n\nThe shoot turned toward the sun. There were many more days ahead to grow.",
+        "parentTip": "You do not have to finish the story; pause whenever your child has a question.",
+        "safetyNote": ""
+      }
+    }
+  },
+  {
+    "id": "guide-five",
+    "kind": "guide",
+    "status": "published",
+    "area": "connection",
+    "minAgeMonths": 12,
+    "maxAgeMonths": 95,
+    "durationMinutes": 3,
+    "translations": {
+      "tr": {
+        "title": "Beş dakikaya yer açmak",
+        "summary": "Birlikte zaman geçirmek için büyük hazırlıklara ihtiyacınız yok.",
+        "materials": [],
+        "steps": [],
+        "body": "Gün içinde zaten yaptığınız bir işi seçin: sofraya oturmak, pencereden bakmak veya oyuncakları toplamak.\n\nTelefonu kısa bir süre kenara koyun. Çocuğunuzun neye baktığını fark edin ve onun ilgisini takip edin.\n\nBir soru sorup cevap için zaman bırakabilirsiniz. Bazen sessizce birlikte yapmak da yeterlidir.\n\nHer gün aynı süreyi ayırmanız gerekmez. Bugün size uygun olan küçük bir anla başlayın.",
+        "parentTip": "Öneriler örnek içeriktir; ailelerin koşullarına göre uyarlanmalıdır.",
+        "safetyNote": ""
+      },
+      "en": {
+        "title": "Making room for five minutes",
+        "summary": "Shared time can begin without elaborate preparation.",
+        "materials": [],
+        "steps": [],
+        "body": "Choose something you already do: sitting at the table, looking out of a window or putting toys away.\n\nSet your phone aside for a short while. Notice what your child is looking at and follow their interest.\n\nYou might ask a question and leave time for an answer. Sometimes doing something quietly together is enough.\n\nYou do not need to spend the same amount of time every day. Begin with a small moment that fits today.",
+        "parentTip": "These are sample suggestions to adapt to each family's circumstances.",
+        "safetyNote": ""
+      }
+    }
+  },
+  {
+    "id": "guide-repeat",
+    "kind": "guide",
+    "status": "published",
+    "area": "discovery",
+    "minAgeMonths": 12,
+    "maxAgeMonths": 95,
+    "durationMinutes": 3,
+    "translations": {
+      "tr": {
+        "title": "Aynı oyuna yeniden dönmek",
+        "summary": "Sevilen bir etkinliğe başka bir gün tekrar yer verin.",
+        "materials": [],
+        "steps": [],
+        "body": "Çocuğunuz aynı oyunu yeniden seçtiğinde onun ilgisine yer açabilirsiniz.\n\nÖnce tanıdık biçimde başlayın. İsterse küçük bir değişiklik önerin: başka bir renk, farklı bir karakter veya yeni bir nesne.\n\nDeğişiklik istemiyorsa oyunun aynı kalması da uygundur. Etkinliği tamamlamak bir sınav değildir.\n\nİlgisi bittiğinde durabilir, başka bir gün yeniden deneyebilirsiniz.",
+        "parentTip": "Tekrarları uygulamada ayrı anlar olarak kaydedebilirsiniz.",
+        "safetyNote": ""
+      },
+      "en": {
+        "title": "Coming back to a favorite game",
+        "summary": "Make room for a familiar activity on another day.",
+        "materials": [],
+        "steps": [],
+        "body": "When your child chooses the same game again, you can make space for that interest.\n\nBegin in the familiar way. If they wish, offer a small change: another color, a different character or a new object.\n\nIt is fine to keep the game the same. Completing an activity is not a test.\n\nWhen their interest fades, stop and return another day.",
+        "parentTip": "You can record repeat activities as separate shared moments.",
+        "safetyNote": ""
+      }
+    }
+  }
+]$kgseed$::jsonb) as c(
+  id text, kind text, status text, area text, "minAgeMonths" integer, "maxAgeMonths" integer, "durationMinutes" integer, translations jsonb
+) on conflict(id) do nothing;
