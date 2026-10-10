@@ -1,11 +1,12 @@
 import React from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, View, type ColorValue, type TextInputProps, type TextProps, type ViewStyle } from 'react-native';
+import { ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View, type ColorValue, type TextInputProps, type TextProps, type ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { router } from 'expo-router';
 import { colors, areaColors } from './theme';
 import { AppError, type Content, type Language } from '../domain/models';
+import { contentImage } from './assets';
 
 export type IconName = React.ComponentProps<typeof Feather>['name'];
 export function Icon({ name, size = 20, color = colors.primary }: { name: IconName; size?: number; color?: ColorValue }) {
@@ -60,8 +61,7 @@ export function ContentCard({ item, featured = false }: { item: Content; feature
   const text = item.translations[i18n.resolvedLanguage as Language] ?? item.translations.en;
   return <Pressable accessibilityRole="button" accessibilityLabel={text.title} onPress={() => router.push({ pathname: '/content/[id]', params: { id: item.id } })}
     style={({ pressed }) => [styles.contentCard, { backgroundColor: featured ? areaColors[item.area] : colors.surface, opacity: pressed ? 0.8 : 1 }]}>
-    <View style={[styles.contentArt, { backgroundColor: areaColors[item.area] }]}><Icon name={contentIcons[item.area]} size={featured ? 56 : 32} />
-      {featured && <View style={styles.artCircle} />}</View>
+    <Image source={contentImage(item)} style={{ width: '100%', height: featured ? 190 : 145, borderRadius: 16 }} resizeMode="cover" />
     <View style={{ gap: 12, flex: 1 }}><View style={styles.row}><Txt style={styles.eyebrow}>{t(item.area)}</Txt><Txt style={styles.meta}>{t('minutes', { count: item.durationMinutes })}</Txt></View>
       <Txt style={[styles.contentTitle, featured && { fontSize: 27 }]}>{text.title}</Txt><Txt style={styles.subtitle}>{text.summary}</Txt>
       <View style={[styles.row, { marginTop: 6 }]}><Txt style={styles.meta}>{t('ages', { min: Math.floor(item.minAgeMonths / 12), max: Math.floor(item.maxAgeMonths / 12) })}</Txt><Icon name="arrow-up-right" /></View>
@@ -77,7 +77,7 @@ export const styles = StyleSheet.create({
   section: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
   sectionTitle: { fontSize: 20, lineHeight: 27, fontWeight: '600', letterSpacing: -0.3 }, link: { color: colors.primary, fontWeight: '600', fontSize: 14 },
   card: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.line, borderRadius: 22, padding: 24, gap: 16 },
-  button: { backgroundColor: colors.primary, minHeight: 48, paddingHorizontal: 20, paddingVertical: 12, borderRadius: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 9 },
+  button: { backgroundColor: colors.accent, minHeight: 48, paddingHorizontal: 20, paddingVertical: 12, borderRadius: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 9 },
   buttonText: { color: '#fff', fontSize: 15, fontWeight: '600', textAlign: 'center', flexShrink: 1 }, secondary: { backgroundColor: colors.primarySoft }, ghost: { backgroundColor: 'transparent' },
   chip: { minHeight: 44, paddingHorizontal: 15, paddingVertical: 9, borderRadius: 24, backgroundColor: '#fff', borderWidth: 1, borderColor: colors.line, flexDirection: 'row', alignItems: 'center', gap: 7 },
   chipSelected: { backgroundColor: colors.primary, borderColor: colors.primary }, chipText: { fontSize: 14, fontWeight: '500' },

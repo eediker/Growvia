@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View } from 'react-native';
+import { Image, View } from 'react-native';
 import { router } from 'expo-router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -8,6 +8,9 @@ import { useClasses, useContent, usePosts } from '../../src/state/queries';
 import type { Language } from '../../src/domain/models';
 import { Button, Card, Chip, Empty, ErrorNotice, Field, Icon, Loading, Page, Title, Txt, styles } from '../../src/ui/components';
 import { colors } from '../../src/ui/theme';
+import { WorldHeader } from '../../src/ui/WorldHeader';
+import { ClassroomTools } from '../../src/ui/ClassroomTool';
+import { contentImage } from '../../src/ui/assets';
 
 export default function ClassroomScreen() {
   const { t, i18n } = useTranslation();
@@ -27,7 +30,7 @@ export default function ClassroomScreen() {
   const share = useMutation({ mutationFn: () => gateway.shareActivity(activeClass!.id, { id: requestId, activityId, message, language: messageLanguage }),
     onSuccess: async () => { setComposing(false); setMessage(''); setRequestId(uuid()); setSuccess(true); await client.invalidateQueries({ queryKey: [scope, 'posts'] }); } });
   const language = i18n.resolvedLanguage as Language;
-  return <Page narrow><Title eyebrow={t('classroom')} title={t('classTitle')} subtitle={t('classBody')} />
+  return <Page narrow><WorldHeader world="classroom" /><Title eyebrow={t('classroom')} title={t('classTitle')} subtitle={t('classBody')} /><ClassroomTools />
     {classes.error && <ErrorNotice error={classes.error} retry={() => void classes.refetch()} />}
     {classes.isPending ? <Loading /> : !activeClass ? <Empty title={t('noClasses')} body={t('noClassesBody')} icon="users" /> : <>
       <View style={styles.wrap}>{classes.data?.map(c => <Chip key={c.id} title={c.name} selected={c.id === activeClass.id} onPress={() => { setClassId(c.id); setComposing(false); setSuccess(false); }} />)}</View>
@@ -46,9 +49,10 @@ export default function ClassroomScreen() {
         posts.data.pages.flatMap(p => p.items).map(post => {
           const activity = catalog.data?.items.find(c => c.id === post.activityId);
           return <Card key={post.id}><View style={styles.row}><View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}><View style={{ backgroundColor: colors.lavender, borderRadius: 22, padding: 12 }}><Icon name="user" /></View><View><Txt style={{ fontWeight: '600' }}>{post.teacherName}</Txt><Txt style={styles.meta}>{new Intl.DateTimeFormat(language, { day: 'numeric', month: 'long' }).format(new Date(post.createdAt))}</Txt></View></View><Icon name="more-horizontal" /></View>
+            {activity && <Image source={contentImage(activity)} style={{ width: '100%', height: 180, borderRadius: 18 }} resizeMode="cover" />}
             <Txt>{post.message}</Txt>{post.language !== language && <Txt style={styles.meta}>{t('originalLanguage', { language: post.language === 'tr' ? 'Türkçe' : 'English' })}</Txt>}
             <View style={{ backgroundColor: colors.peach, padding: 18, borderRadius: 16, gap: 12 }}><Txt style={styles.eyebrow}>{t('activity')}</Txt><Txt style={styles.sectionTitle}>{activity?.translations[language].title ?? t('continueHome')}</Txt>
-              <Button variant="secondary" title={t('continueHome')} icon="arrow-right" onPress={() => router.push({ pathname: '/content/[id]', params: { id: post.activityId } })} /></View>
+              <Button variant="secondary" title={t('continueHome')} icon="arrow-right" onPress={() => router.push({ pathname: '/transition', params: { id: post.activityId } })} /></View>
           </Card>;
         })}
       {posts.hasNextPage && <Button title={t('loadMore')} variant="secondary" busy={posts.isFetchingNextPage} onPress={() => void posts.fetchNextPage()} />}

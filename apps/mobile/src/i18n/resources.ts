@@ -1,5 +1,34 @@
+import { worldsEn, worldsTr } from './worlds';
+const authErrors = {
+  en: {
+    medicationInvalid: 'Enter a sample medicine name and a valid 24-hour time (HH:mm).',
+    emailUnconfirmed: 'Verify your email before signing in.',
+    rateLimited: 'Too many attempts. Please wait a few minutes and try again.',
+    weakPassword: 'Use at least 8 characters. Your password must also meet the account security requirements.',
+    authInvalid: 'Enter your name and a valid email address.',
+    signupUnavailable: 'Registration or email delivery is not available for this address yet. Please contact the app administrator.',
+  },
+  tr: {
+    medicationInvalid: 'Örnek ilaç adı ve 24 saat biçiminde geçerli bir saat girin (SS:DD).',
+    emailUnconfirmed: 'Giriş yapmadan önce e-posta adresinizi doğrulayın.',
+    rateLimited: 'Çok fazla deneme yapıldı. Birkaç dakika bekleyip yeniden deneyin.',
+    weakPassword: 'En az 8 karakter kullanın. Şifreniz hesap güvenlik gereksinimlerini de karşılamalıdır.',
+    authInvalid: 'Adınızı ve geçerli bir e-posta adresi girin.',
+    signupUnavailable: 'Bu adres için kayıt veya e-posta gönderimi henüz kullanılamıyor. Uygulama yöneticisiyle iletişime geçin.',
+  },
+};
+
 export const resources = {
   en: { translation: {
+    ...worldsEn,
+    guideCms: { title: 'A guide by your side.', body: 'Explore practical ideas for everyday parenting.', tryActivity: 'Try this with your child — open the activity', editChild: 'Edit child' },
+    welcomeTitle: 'Welcome to Kids Guide.', welcomeBody: 'Small ideas for meaningful time with your child. Create an account or log in to get started.',
+    signUp: 'Sign up', signUpTitle: 'A little beginning.', signUpBody: 'Create your account to explore activities and stay connected with your classroom.',
+    yourName: 'Your name', repeatPassword: 'Repeat password', passwordHint: 'Use at least 8 characters.', passwordMismatch: 'The passwords do not match.',
+    haveAccount: 'Already have an account? Log in', needAccount: 'New here? Sign up',
+    checkEmailTitle: 'Check your email.', checkEmailBody: 'If confirmation is needed for {{email}}, check your inbox and spam folder for the verification email.',
+    confirmationNote: 'Open the confirmation link, then return here and log in. If you already have an account, log in with your existing password.',
+    resendConfirmation: 'Resend confirmation email', confirmationResent: 'Confirmation requested. Please check your inbox and spam folder.',
     brand: 'Kids Guide', tagline: 'Little moments, together.', home: 'Today', discover: 'Explore', classroom: 'My class', settings: 'Settings',
     parent: 'Parent', teacher: 'Teacher', offline: 'Offline demo', online: 'Connected mode', sample: 'Demo with fictional people and sample content',
     hello: 'Hello, {{name}}', heroTitle: 'Small moments.\nStronger connections.', heroBody: 'A little curiosity, a little play, and time for each other. Find something that fits today.',
@@ -29,10 +58,19 @@ export const resources = {
     about: 'Made for moments together', aboutBody: 'Kids Guide helps you find practical ways to spend time together. It does not assess or diagnose children. Demo content needs editorial review before a public release.',
     signIn: 'Sign in', signInTitle: 'Welcome back.', signInBody: 'Sign in to access your family and classroom.', email: 'Email', password: 'Password', signOut: 'Sign out', backToDemo: 'Explore the offline demo',
     loading: 'Getting things ready…', retry: 'Try again', errorTitle: 'Something needs a moment',
-    errors: { configuration: 'Add your Supabase project URL and publishable key to appsettings.json, then restart the app. The offline demo is ready to use now.', unauthorized: 'Please check your sign-in details or sign in again.', notFound: 'This item is unavailable or you do not have access.', invalid: 'Please check the details. Children must be aged 1–7.', conflict: 'This change conflicts with an existing record. Please refresh.', network: 'We could not connect. Check your internet connection and try again.', server: 'The service could not complete this request. Please try again.', storage: 'Data could not be saved or loaded. Check device storage; demo data can be reset in Settings.' },
+    errors: { ...authErrors.en, configuration: 'Add your Supabase project URL and publishable key to appsettings.json, then restart the app. The offline demo is ready to use now.', unauthorized: 'Please check your sign-in details or sign in again.', notFound: 'This item is unavailable or you do not have access.', invalid: 'Please check the details. Children must be aged 1–7.', conflict: 'This change conflicts with an existing record. Please refresh.', network: 'We could not connect. Check your internet connection and try again.', server: 'The service could not complete this request. Please try again.', storage: 'Data could not be saved or loaded. Check device storage; demo data can be reset in Settings.' },
     sharedLibrary: 'The shared library', sharedLibraryBody: 'Find a small idea to bring to your classroom today.', saved: 'Saved', moreIdeas: 'More little ideas',
   } },
   tr: { translation: {
+    ...worldsTr,
+    guideCms: { title: 'Size eşlik eden bir rehber.', body: 'Günlük ebeveynlikte ihtiyaç duyduğunuz bilgileri keşfedin.', tryActivity: 'Bunu çocuğunuzla deneyin — ilgili etkinliği aç', editChild: 'Çocuğu düzenle' },
+    welcomeTitle: 'Kids Guide’a hoş geldiniz.', welcomeBody: 'Çocuğunuzla anlamlı zaman geçirmek için küçük fikirler. Başlamak için kayıt olun veya giriş yapın.',
+    signUp: 'Kayıt ol', signUpTitle: 'Küçük bir başlangıç.', signUpBody: 'Etkinlikleri keşfetmek ve sınıfınızla bağlantıda kalmak için hesabınızı oluşturun.',
+    yourName: 'Adınız', repeatPassword: 'Şifreyi tekrar girin', passwordHint: 'En az 8 karakter kullanın.', passwordMismatch: 'Şifreler eşleşmiyor.',
+    haveAccount: 'Zaten hesabınız var mı? Giriş yapın', needAccount: 'Yeni misiniz? Kayıt olun',
+    checkEmailTitle: 'E-postanızı kontrol edin.', checkEmailBody: '{{email}} için doğrulama gerekiyorsa doğrulama e-postası için gelen kutunuzu ve spam klasörünüzü kontrol edin.',
+    confirmationNote: 'Doğrulama bağlantısını açın, ardından buraya dönüp giriş yapın. Zaten hesabınız varsa mevcut şifrenizle giriş yapın.',
+    resendConfirmation: 'Doğrulama e-postasını yeniden gönder', confirmationResent: 'Doğrulama istendi. Gelen kutunuzu ve spam klasörünüzü kontrol edin.',
     brand: 'Kids Guide', tagline: 'Küçük anlar, birlikte.', home: 'Bugün', discover: 'Keşfet', classroom: 'Sınıfım', settings: 'Ayarlar',
     parent: 'Ebeveyn', teacher: 'Öğretmen', offline: 'Çevrimdışı demo', online: 'Bağlantılı mod', sample: 'Kurgusal kişiler ve örnek içeriklerle demo',
     hello: 'Merhaba, {{name}}', heroTitle: 'Küçük anlar.\nGüçlü bağlar.', heroBody: 'Biraz merak, biraz oyun ve birbirinize ayırdığınız zaman. Bugüne uygun küçük bir fikir bulun.',
@@ -62,7 +100,7 @@ export const resources = {
     about: 'Birlikte geçirilen anlar için', aboutBody: 'Kids Guide, birlikte zaman geçirmek için uygulanabilir fikirler sunar. Çocukları değerlendirmez veya tanı koymaz. Örnek içerikler, yayın öncesinde editoryal inceleme gerektirir.',
     signIn: 'Giriş yap', signInTitle: 'Yeniden merhaba.', signInBody: 'Ailenize ve sınıfınıza erişmek için giriş yapın.', email: 'E-posta', password: 'Şifre', signOut: 'Çıkış yap', backToDemo: 'Çevrimdışı demoyu keşfet',
     loading: 'Hazırlanıyor…', retry: 'Yeniden dene', errorTitle: 'Küçük bir sorun oluştu',
-    errors: { configuration: 'Supabase proje adresinizi ve publishable anahtarınızı appsettings.json dosyasına ekleyip uygulamayı yeniden başlatın. Çevrimdışı demo şu anda kullanıma hazır.', unauthorized: 'Giriş bilgilerinizi kontrol edin veya yeniden giriş yapın.', notFound: 'Bu içerik bulunamadı veya erişim izniniz yok.', invalid: 'Bilgileri kontrol edin. Çocuklar 1–7 yaş arasında olmalıdır.', conflict: 'Bu değişiklik mevcut bir kayıtla çakışıyor. Lütfen yenileyin.', network: 'Bağlantı kurulamadı. İnternet bağlantınızı kontrol edip yeniden deneyin.', server: 'İşlem tamamlanamadı. Lütfen yeniden deneyin.', storage: 'Veri yüklenemedi veya kaydedilemedi. Cihaz depolamasını kontrol edin; demo verileri Ayarlardan sıfırlanabilir.' },
+    errors: { ...authErrors.tr, configuration: 'Supabase proje adresinizi ve publishable anahtarınızı appsettings.json dosyasına ekleyip uygulamayı yeniden başlatın. Çevrimdışı demo şu anda kullanıma hazır.', unauthorized: 'Giriş bilgilerinizi kontrol edin veya yeniden giriş yapın.', notFound: 'Bu içerik bulunamadı veya erişim izniniz yok.', invalid: 'Bilgileri kontrol edin. Çocuklar 1–7 yaş arasında olmalıdır.', conflict: 'Bu değişiklik mevcut bir kayıtla çakışıyor. Lütfen yenileyin.', network: 'Bağlantı kurulamadı. İnternet bağlantınızı kontrol edip yeniden deneyin.', server: 'İşlem tamamlanamadı. Lütfen yeniden deneyin.', storage: 'Veri yüklenemedi veya kaydedilemedi. Cihaz depolamasını kontrol edin; demo verileri Ayarlardan sıfırlanabilir.' },
     sharedLibrary: 'Ortak kütüphane', sharedLibraryBody: 'Bugün sınıfınıza taşıyabileceğiniz küçük bir fikir bulun.', saved: 'Kaydedildi', moreIdeas: 'Daha fazla küçük fikir',
   } },
 };

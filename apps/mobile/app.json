@@ -3,15 +3,22 @@
     "name": "Kids Guide",
     "slug": "kids-guide",
     "scheme": "kidsguide",
-    "version": "0.1.0",
+    "version": "0.25.1",
     "orientation": "default",
     "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./src/assets/opening-splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FBF8F2"
+    },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.kidsguide.app"
+      "bundleIdentifier": "com.kidsguide.app",
+      "buildNumber": "37"
     },
     "android": {
-      "package": "com.kidsguide.app"
+      "package": "com.kidsguide.app",
+      "versionCode": 37
     },
     "web": {
       "bundler": "metro",
@@ -22,7 +29,8 @@
       "expo-localization",
       "expo-secure-store",
       "expo-font",
-      "expo-status-bar"
+      "expo-status-bar",
+      "./plugins/withStandaloneAndroid.cjs"
     ],
     "experiments": {
       "typedRoutes": true

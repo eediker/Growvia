@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { View } from 'react-native';
 import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { useApp } from '../../src/state/AppProvider';
-import { Button, Card, Chip, ErrorNotice, Icon, Page, Title, Txt, styles } from '../../src/ui/components';
-import { colors } from '../../src/ui/theme';
+import { useApp } from '../src/state/AppProvider';
+import { BackButton, Button, Card, Chip, ErrorNotice, Icon, Page, Title, Txt, styles } from '../src/ui/components';
+import { colors } from '../src/ui/theme';
 
 export default function SettingsScreen() {
   const { t, i18n } = useTranslation();
@@ -13,7 +13,7 @@ export default function SettingsScreen() {
   const reset = useMutation({ mutationFn: app.resetDemo, onSuccess: () => setConfirmReset(false) });
   const language = useMutation({ mutationFn: app.setLanguage });
   const logout = useMutation({ mutationFn: app.logout });
-  return <Page narrow><Title title={t('settings')} subtitle={t('tagline')} />
+  return <Page narrow><BackButton /><Title title={t('settings')} subtitle={t('tagline')} />
     <Card><View style={styles.row}><Txt style={styles.sectionTitle}>{t('languageSetting')}</Txt><Icon name="globe" /></View>
       <View style={styles.wrap}>{(['tr', 'en'] as const).map(locale => <Chip key={locale} title={locale === 'tr' ? 'Türkçe' : 'English'} selected={i18n.resolvedLanguage === locale} onPress={() => language.mutate(locale)} />)}</View>
       <Txt style={styles.subtitle}>{t('languageNote')}</Txt>{language.error && <ErrorNotice error={language.error} />}</Card>
@@ -32,3 +32,4 @@ export default function SettingsScreen() {
     <Card style={{ backgroundColor: colors.primarySoft }}><Icon name="heart" /><Txt style={styles.sectionTitle}>{t('about')}</Txt><Txt style={styles.subtitle}>{t('aboutBody')}</Txt></Card>
   </Page>;
 }
+

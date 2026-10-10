@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { defaultGuideCategories } from '../domain/guides';
 import seed from '../../../../shared/demo-content.json';
 import { AppError, childSchema, completionSchema, contentSchema, postSchema, validateChild, normalizeSearch,
   type Child, type ClassPost, type Completion, type KidsGuideGateway, type Persona, type User } from '../domain/models';
@@ -13,7 +14,10 @@ export const demoUsers: Record<Persona, User> = {
   parent: { id: 'demo-parent', name: 'Deniz', email: 'parent@demo.kidsguide.test', isTeacher: false, canEditContent: false },
   teacher: { id: 'demo-teacher', name: 'Elif', email: 'teacher@demo.kidsguide.test', isTeacher: true, canEditContent: false },
 };
-const catalog = z.array(contentSchema).parse(seed);
+const catalog = z.array(contentSchema).parse(seed).map(item => item.kind === 'guide' ? {
+  ...item, categoryId: 'parenting-approach', sortOrder: item.id === 'guide-five' ? 10 : 20,
+  relatedActivityId: item.id === 'guide-five' ? 'activity-colors' : 'activity-leaves',
+} : item);
 function initialState(now: Date): DemoState {
   const birth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 42, 15));
   return { version: 1, children: [{ id: demoChildId, name: 'Ada', dateOfBirth: birth.toISOString().slice(0, 10) }], completions: [],
@@ -62,6 +66,7 @@ export class DemoDatabase {
     };
     return {
       me: async () => demoUsers[persona],
+      guideCategories: async () => defaultGuideCategories,
       children: () => this.transaction(state => parent ? state.children : []),
       createChild: input => this.transaction(state => {
         if (!parent || state.children.length >= 20) throw new AppError('invalid');
@@ -69,13 +74,20 @@ export class DemoDatabase {
         state.children.push(child);
         return child;
       }, true),
+      updateChild: (id, input) => this.transaction(state => {
+        requireParent(state, id);
+        const child = state.children.find(c => c.id === id)!;
+        Object.assign(child, validateChild(input, this.clock()));
+        return child;
+      }, true),
       content: async (filter = {}) => {
         if (filter.ageMonths !== undefined && (filter.ageMonths < 12 || filter.ageMonths > 95)) throw new AppError('invalid');
         const items = catalog.filter(c => c.status === 'published' && (!filter.kind || c.kind === filter.kind)
+          && (!filter.categoryId || c.categoryId === filter.categoryId)
           && (filter.ageMonths === undefined || (filter.ageMonths >= c.minAgeMonths && filter.ageMonths <= c.maxAgeMonths))
           && (!filter.search?.trim() || Object.entries(c.translations).some(([locale, text]) =>
             (!filter.language || locale === filter.language) && normalizeSearch(`${text.title} ${text.summary}`).includes(normalizeSearch(filter.search!.trim())))))
-          .sort((a, b) => a.id.localeCompare(b.id));
+          .sort((a, b) => (filter.kind === 'guide' ? (a.sortOrder ?? 0) - (b.sortOrder ?? 0) : 0) || a.id.localeCompare(b.id));
         const offset = Math.max(0, filter.offset ?? 0), limit = Math.max(1, Math.min(100, filter.limit ?? 100));
         return { items: items.slice(offset, offset + limit), total: items.length, offset, limit };
       },

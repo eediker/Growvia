@@ -59,7 +59,7 @@ pnpm test
 pnpm web
 ```
 
-Use `pnpm start` for a compatible Expo Go session. After prebuild, `pnpm android` runs `expo run:android`: it compiles and installs a debug app on an emulator/device and starts the development server. Use the release command below for an APK with bundled JavaScript. Browser DevTools help inspect JavaScript and Supabase requests; React Native DevTools and Android Studio Logcat help with native sessions.
+Use `pnpm start` for a compatible Expo Go session. After prebuild, `pnpm android` compiles and installs a standalone debug app without starting Metro. Android Studio Run provides the same terminal-free workflow. Browser DevTools help inspect JavaScript and Supabase requests; React Native DevTools and Android Studio Logcat help with native sessions.
 
 ## Build a standalone APK after tools are installed
 
@@ -81,34 +81,20 @@ The installed APK does not need Expo running on your computer. Supabase features
 
 The release build completed successfully and was installed and launched on the Android emulator. Sign-in screen rendering, offline home, activity details, and saving activity completion were checked without a logged crash. The tested APK is copied to `artifacts/kids-guide-0.1.0-universal.apk`. It declares Android 7.0 (API 24) or newer and includes ARM64, ARMv7, x86, and x86_64 native libraries. Signature verification passed. Physical-phone installation and hosted authenticated flows still need verification.
 
-## Open in Android Studio
+## Open in Android Studio — no terminal required
 
-Open `apps/mobile/android` as the Android Studio project after prebuild. Allow Gradle sync to finish and use JDK 17 for Gradle (see the Java troubleshooting note below). Start your virtual phone from Device Manager.
+1. Open `apps/mobile/android` in Android Studio and let Gradle sync finish.
+2. Start your virtual phone from Device Manager, or select your connected phone.
+3. Select the `app` run configuration and the `debug` build variant.
+4. Click **Run ▶**. Once installed, you can also open **Kids Guide** directly from the device's app launcher.
 
-For Android Studio's **Run** button with the `debug` build variant:
+Both debug and release builds now package their JavaScript and images. Neither needs a running Metro server, a terminal, or `adb reverse`. Supabase features still need internet; the offline demo does not.
 
-1. Open Android Studio's Terminal and start Metro, the JavaScript development server:
+After editing JavaScript, TypeScript, images or settings, click **Run** again to rebuild and install the updated app. Live JavaScript refresh and the React Native developer menu are disabled in this standalone Android configuration. Native Android debugging remains available because the APK is still an Android debug build.
 
-   ```powershell
-   cd C:\Users\eedik\source\Growvia
-   pnpm.cmd android:metro
-   ```
+The checked-in Expo plugin `apps/mobile/plugins/withStandaloneAndroid.cjs` configures both Gradle bundling and the native host, so the setting survives prebuild. Do not remove just one half: packaging without changing the host can still leave the debug app looking for Metro.
 
-2. Keep that terminal running. In a second terminal, with the emulator started, run:
-
-   ```powershell
-   adb reverse tcp:8081 tcp:8081
-   ```
-
-   If more than one device is connected, use `adb devices` and specify the intended serial with `adb -s <serial> reverse tcp:8081 tcp:8081`. Repeat after restarting the emulator or reconnecting a phone.
-
-3. Select the `app` run configuration and your emulator, then click **Run**. If the error screen was already open, stop and rerun the app.
-
-Android Studio compiles the native debug app but does not start Expo's Metro server. **Unable to load script** occurs when this debug app cannot reach Metro; the default debug variant deliberately does not package `index.android.bundle`. Metro serves the JavaScript during development, including when using offline demo data. The release APK bundles JavaScript and does not need Metro.
-
-This workflow was verified with the installed debug build: Metro bundled the Android entry point and the emulator rendered the sign-in screen without JavaScript or native errors in the inspected logs. Avoid adding `--localhost` to the Metro command on this workstation: it bound only to IPv6 loopback and the emulator connection failed.
-
-To try the standalone build without a development server, drag `artifacts/kids-guide-0.1.0-universal.apk` onto the running emulator and open **Kids Guide**. For source debugging, run `pnpm android` from the repository root with the emulator running; this installs a debug build and starts Metro. Keep that terminal open during development.
+Previously installed APKs are not changed by editing the source. Run once from Android Studio to replace an older Metro-dependent debug installation. Metro commands remain available for browser/Expo workflows, but are not required by this Android app.
 
 ## Windows native-build troubleshooting
 

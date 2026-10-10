@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { guideBlockSchema, mediaUrlSchema, type GuideCategory } from './guides';
 
 export const languageSchema = z.enum(['tr', 'en']);
 export type Language = z.infer<typeof languageSchema>;
@@ -9,12 +10,15 @@ export type ContentKind = z.infer<typeof kindSchema>;
 export const translationSchema = z.object({
   title: z.string(), summary: z.string(), materials: z.array(z.string()), steps: z.array(z.string()),
   body: z.string(), parentTip: z.string(), safetyNote: z.string(),
+  contentBlocks: z.array(guideBlockSchema).max(100).optional(),
 });
 export const contentSchema = z.object({
   id: z.string(), kind: kindSchema, status: z.enum(['draft', 'published', 'archived']),
   area: z.enum(['discovery', 'nature', 'movement', 'language', 'connection']),
   minAgeMonths: z.number().int().min(12), maxAgeMonths: z.number().int().max(95), durationMinutes: z.number().int().positive(),
   translations: z.object({ tr: translationSchema, en: translationSchema }),
+  categoryId: z.string().nullish(), sortOrder: z.number().int().optional(), iconId: z.string().nullish(),
+  iconUrl: mediaUrlSchema.nullish(), coverImageUrl: mediaUrlSchema.nullish(), relatedActivityId: z.string().nullish(),
 });
 export type Content = z.infer<typeof contentSchema>;
 export const userSchema = z.object({ id: z.string(), name: z.string(), email: z.string(), isTeacher: z.boolean(), canEditContent: z.boolean() });
@@ -31,7 +35,7 @@ export const pageSchema = <T extends z.ZodType>(item: T) => z.object({ items: z.
 
 export type CreatePost = { id: string; activityId: string; message: string; language: Language };
 export type CreateChild = Pick<Child, 'name' | 'dateOfBirth'>;
-export type ContentFilter = { kind?: ContentKind; ageMonths?: number; search?: string; language?: Language; offset?: number; limit?: number };
+export type ContentFilter = { kind?: ContentKind; categoryId?: string; ageMonths?: number; search?: string; language?: Language; offset?: number; limit?: number };
 export type Page<T> = { items: T[]; total: number; offset: number; limit: number };
 
 /** UI features depend on this contract, never on fetch or native storage. */
@@ -39,8 +43,10 @@ export interface KidsGuideGateway {
   me(): Promise<User>;
   children(): Promise<Child[]>;
   createChild(input: CreateChild): Promise<Child>;
+  updateChild(id: string, input: CreateChild): Promise<Child>;
   content(filter?: ContentFilter): Promise<Page<Content>>;
   contentById(id: string): Promise<Content>;
+  guideCategories(): Promise<GuideCategory[]>;
   classes(): Promise<Classroom[]>;
   posts(classId: string, offset?: number): Promise<Page<ClassPost>>;
   shareActivity(classId: string, input: CreatePost): Promise<void>;
@@ -49,7 +55,8 @@ export interface KidsGuideGateway {
   removeCompletion(childId: string, id: string): Promise<void>;
 }
 
-export type ErrorCode = 'unauthorized' | 'notFound' | 'invalid' | 'conflict' | 'network' | 'server' | 'storage' | 'configuration';
+export type ErrorCode = 'unauthorized' | 'notFound' | 'invalid' | 'conflict' | 'network' | 'server' | 'storage' | 'configuration'
+  | 'emailUnconfirmed' | 'rateLimited' | 'weakPassword' | 'authInvalid' | 'signupUnavailable' | 'medicationInvalid';
 export class AppError extends Error {
   constructor(public readonly code: ErrorCode, options?: ErrorOptions) { super(code, options); }
 }

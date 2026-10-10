@@ -10,7 +10,6 @@ import { settings } from '../config/settings';
 export async function createCloudClient() {
   const { url, publishableKey } = settings.supabase;
   if (!/^https:\/\/.+/.test(url) || !publishableKey.startsWith('sb_publishable_')) throw new AppError('configuration');
-  const memory = new Map<string, string>();
   const safeKey = (key: string) => `kids-guide.cloud.${key.replace(/[^\w.-]/g, '_')}`;
   const secure = chunkedSecureStorage({ getItem: SecureStore.getItemAsync, setItem: SecureStore.setItemAsync, removeItem: SecureStore.deleteItemAsync }, Crypto.randomUUID);
   return createClient(url, publishableKey, {
@@ -19,13 +18,13 @@ export async function createCloudClient() {
       // back to offline must not leave a cloud token-refresh timer running.
       autoRefreshToken: false, persistSession: true, detectSessionInUrl: false,
       storage: {
-        getItem: key => Platform.OS === 'web' ? Promise.resolve(memory.get(key) ?? null) : secure.getItem(safeKey(key)),
+        getItem: async key => Platform.OS === 'web' ? (typeof window === 'undefined' ? null : window.localStorage.getItem(key)) : secure.getItem(safeKey(key)),
         setItem: async (key, value) => {
-          if (Platform.OS === 'web') memory.set(key, value);
+          if (Platform.OS === 'web') { if (typeof window !== 'undefined') window.localStorage.setItem(key, value); }
           else await secure.setItem(safeKey(key), value);
         },
         removeItem: async key => {
-          if (Platform.OS === 'web') memory.delete(key);
+          if (Platform.OS === 'web') { if (typeof window !== 'undefined') window.localStorage.removeItem(key); }
           else await secure.removeItem(safeKey(key));
         },
       },

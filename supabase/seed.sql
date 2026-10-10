@@ -1,7 +1,7 @@
 -- Generated from shared/demo-content.json; run pnpm seed:generate to update.
 -- Sample content only. Existing content is never overwritten. No users or credentials.
-insert into public.kg_content(id, kind, status, area, min_age_months, max_age_months, duration_minutes, translations)
-select id, kind, status, area, "minAgeMonths", "maxAgeMonths", "durationMinutes", translations
+insert into public.kg_content(id, kind, status, area, min_age_months, max_age_months, duration_minutes, translations, category_id, sort_order)
+select id, kind, status, area, "minAgeMonths", "maxAgeMonths", "durationMinutes", translations, "categoryId", "sortOrder"
 from jsonb_to_recordset($kgseed$[
   {
     "id": "activity-colors",
@@ -40,7 +40,9 @@ from jsonb_to_recordset($kgseed$[
         "parentTip": "Younger children can point; older children can create their own color hunt.",
         "safetyNote": "Avoid small, sharp or breakable objects."
       }
-    }
+    },
+    "categoryId": null,
+    "sortOrder": 10
   },
   {
     "id": "activity-leaves",
@@ -83,7 +85,9 @@ from jsonb_to_recordset($kgseed$[
         "parentTip": "Listen to what your child notices before offering your own answer.",
         "safetyNote": "Do not pick unknown plants or put leaves in the mouth. Wash hands afterwards."
       }
-    }
+    },
+    "categoryId": null,
+    "sortOrder": 10
   },
   {
     "id": "activity-tower",
@@ -126,7 +130,9 @@ from jsonb_to_recordset($kgseed$[
         "parentTip": "Enjoy trying together rather than aiming for a perfect tower.",
         "safetyNote": "Avoid small parts that could be swallowed. Stay alongside your child."
       }
-    }
+    },
+    "categoryId": null,
+    "sortOrder": 10
   },
   {
     "id": "activity-story",
@@ -169,7 +175,9 @@ from jsonb_to_recordset($kgseed$[
         "parentTip": "Follow your child's ideas; there is no single correct ending.",
         "safetyNote": "Avoid sharp, heavy or breakable objects."
       }
-    }
+    },
+    "categoryId": null,
+    "sortOrder": 10
   },
   {
     "id": "activity-feelings",
@@ -208,7 +216,9 @@ from jsonb_to_recordset($kgseed$[
         "parentTip": "Keep sharing entirely optional.",
         "safetyNote": "Do not pressure your child to talk about something upsetting."
       }
-    }
+    },
+    "categoryId": null,
+    "sortOrder": 10
   },
   {
     "id": "activity-path",
@@ -251,7 +261,9 @@ from jsonb_to_recordset($kgseed$[
         "parentTip": "Adapt the movements to your child's comfort.",
         "safetyNote": "Use a clear, non-slip floor and stay close to offer support."
       }
-    }
+    },
+    "categoryId": null,
+    "sortOrder": 10
   },
   {
     "id": "story-cloud",
@@ -280,7 +292,9 @@ from jsonb_to_recordset($kgseed$[
         "parentTip": "Pause as you read and invite your child to imagine the pictures or copy the sounds.",
         "safetyNote": ""
       }
-    }
+    },
+    "categoryId": null,
+    "sortOrder": 10
   },
   {
     "id": "story-seed",
@@ -309,7 +323,9 @@ from jsonb_to_recordset($kgseed$[
         "parentTip": "You do not have to finish the story; pause whenever your child has a question.",
         "safetyNote": ""
       }
-    }
+    },
+    "categoryId": null,
+    "sortOrder": 10
   },
   {
     "id": "guide-five",
@@ -338,7 +354,9 @@ from jsonb_to_recordset($kgseed$[
         "parentTip": "These are sample suggestions to adapt to each family's circumstances.",
         "safetyNote": ""
       }
-    }
+    },
+    "categoryId": "parenting-approach",
+    "sortOrder": 10
   },
   {
     "id": "guide-repeat",
@@ -367,8 +385,10 @@ from jsonb_to_recordset($kgseed$[
         "parentTip": "You can record repeat activities as separate shared moments.",
         "safetyNote": ""
       }
-    }
+    },
+    "categoryId": "parenting-approach",
+    "sortOrder": 20
   }
 ]$kgseed$::jsonb) as c(
-  id text, kind text, status text, area text, "minAgeMonths" integer, "maxAgeMonths" integer, "durationMinutes" integer, translations jsonb
+  id text, kind text, status text, area text, "minAgeMonths" integer, "maxAgeMonths" integer, "durationMinutes" integer, translations jsonb, "categoryId" text, "sortOrder" integer
 ) on conflict(id) do nothing;

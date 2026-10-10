@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { z } from 'zod';
+import { guideCategorySchema } from '../domain/guides';
 import { AppError, childSchema, classSchema, completionSchema, contentSchema, pageSchema, postSchema, userSchema, type KidsGuideGateway } from '../domain/models';
 
 export type SupabaseFactory = () => Promise<SupabaseClient>;
@@ -7,6 +8,12 @@ export type SupabaseFactory = () => Promise<SupabaseClient>;
 export function cloudError(error: unknown): AppError {
   if (error instanceof AppError) return error;
   const value = error as { code?: string; status?: number; message?: string; name?: string };
+  if (value.code === 'refresh_token_not_found' || value.code === 'refresh_token_already_used' || value.code === 'session_not_found' || value.name === 'AuthSessionMissingError') return new AppError('unauthorized');
+  if (value.code === 'email_not_confirmed') return new AppError('emailUnconfirmed');
+  if (value.status === 429) return new AppError('rateLimited');
+  if (value.code === 'weak_password') return new AppError('weakPassword');
+  if (value.code === 'email_address_invalid' || value.code === 'validation_failed') return new AppError('authInvalid');
+  if (value.code === 'signup_disabled' || value.code === 'email_provider_disabled' || value.code === 'email_address_not_authorized') return new AppError('signupUnavailable');
   if (value.status === 401 || value.code === 'PGRST301' || value.code === 'unauthorized' || value.message === 'unauthorized' || value.code === 'invalid_credentials') return new AppError('unauthorized');
   if (value.status === 403 || value.code === '42501' || value.message === 'notFound') return new AppError('notFound');
   if (value.code === '23505' || value.message === 'conflict') return new AppError('conflict');
@@ -43,11 +50,33 @@ export class SupabaseService {
       if (error) throw error;
     } catch (error) { throw cloudError(error); }
   }
+  async signup(name: string, email: string, password: string): Promise<'signedIn' | 'confirmationRequired'> {
+    if (!name.trim() || name.trim().length > 100 || !z.email().safeParse(email.trim()).success) throw new AppError('authInvalid');
+    if (password.length < 8) throw new AppError('weakPassword');
+    try {
+      const { data, error } = await (await this.getClient()).auth.signUp({
+        email: email.trim(), password, options: { data: { name: name.trim() } },
+      });
+      if (error) throw error;
+      return data.session ? 'signedIn' : 'confirmationRequired';
+    } catch (error) { throw cloudError(error); }
+  }
+  async resendConfirmation(email: string): Promise<void> {
+    try {
+      const { error } = await (await this.getClient()).auth.resend({ type: 'signup', email: email.trim() });
+      if (error) throw error;
+    } catch (error) { throw cloudError(error); }
+  }
   readonly gateway: KidsGuideGateway = {
     me: () => this.rpc('kg_me', {}, userSchema),
     children: () => this.rpc('kg_children', {}, z.array(childSchema)),
     createChild: input => this.rpc('kg_create_child', { p_name: input.name, p_date_of_birth: input.dateOfBirth }, childSchema),
-    content: (filter = {}) => this.rpc('kg_content_list', { p_kind: filter.kind ?? null, p_age_months: filter.ageMonths ?? null,
+    updateChild: (id, input) => this.rpc('kg_update_child', { p_id: id, p_name: input.name, p_date_of_birth: input.dateOfBirth }, childSchema),
+    guideCategories: () => this.rpc('kg_guide_categories', {}, z.array(guideCategorySchema)),
+    content: (filter = {}) => filter.kind === 'guide' ? this.rpc('kg_guide_list', {
+      p_category_id: filter.categoryId ?? null, p_age_months: filter.ageMonths ?? null, p_search: filter.search ?? null,
+      p_language: filter.language ?? null, p_offset: filter.offset ?? 0, p_limit: filter.limit ?? 100,
+    }, pageSchema(contentSchema)) : this.rpc('kg_content_list', { p_kind: filter.kind ?? null, p_age_months: filter.ageMonths ?? null,
       p_search: filter.search ?? null, p_language: filter.language ?? null, p_offset: filter.offset ?? 0, p_limit: filter.limit ?? 100 }, pageSchema(contentSchema)),
     contentById: id => this.rpc('kg_content_by_id', { p_id: id }, contentSchema),
     classes: () => this.rpc('kg_classes', {}, z.array(classSchema)),

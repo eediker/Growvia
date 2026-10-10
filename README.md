@@ -17,6 +17,8 @@ pnpm web
 
 For Android tools and APK instructions, follow [Windows setup](docs/windows-android-setup.md). Android Studio is only needed for native Android work; the browser preview works without it.
 
+Android Studio's **Run** build includes the JavaScript bundle. Open `apps/mobile/android`, select the emulator and click **Run**; Metro and a terminal are not needed. Click Run again after source changes to install the latest code. The Expo config plugin preserves this behavior when regenerating the native project.
+
 ## Connection settings
 
 Edit `apps/mobile/appsettings.json`:
@@ -36,7 +38,7 @@ The owner has applied the schema and sample-content seed. Authentication connect
 
 ## Try the demo
 
-Choose the offline demo on the sign-in screen. In Settings, switch Turkish/English or Parent/Teacher. As Teacher, share an activity from My class. Switch to Parent, open the post, continue at home, and save or undo completion. Ten bilingual sample entries are included. Teacher-written messages retain their original language.
+On startup, a saved online session opens the app directly. Otherwise, the login screen offers signup and the offline demo. The signed-in hub opens separate My child and My class areas. Email signup supports confirmation and resend; configure email delivery in Supabase before testing with external users. Choose the offline demo to explore without an account. In Settings, switch Turkish/English or Parent/Teacher. As Teacher, share an activity from My class. Switch to Parent, open the post, continue at home, and save or undo completion. Ten bilingual sample entries are included. Teacher-written messages retain their original language.
 
 Demo records stay on the device. Resetting the demo does not affect Supabase. An online request failure does not silently fall back to fictional data.
 
@@ -65,6 +67,9 @@ Tests cover domain rules, offline persistence, Supabase adapter behavior, native
 
 ## Pre-prototype boundaries
 
-This is ready for further prototype development, not public production deployment. The release APK builds successfully and emulator checks cover startup, offline navigation, and saving activity completion. Physical-phone installation and authenticated cloud testing remain pending. Pilot accounts and classroom membership are administered through Supabase; onboarding, recovery, invitations, content-authoring UI, account deletion/export, media, notifications, offline synchronization of real accounts, and AI are not included. Sample content needs qualified editorial review before a public release.
+This is ready for further prototype development, not public production deployment. The previously verified release APK covers startup, offline navigation, and saving activity completion; the V25 changes have passed a web export but need a new native build. Physical-phone installation and authenticated cloud testing remain pending. Email signup is available; classroom membership is administered through Supabase. Guide authoring and editorial image uploads are available in the V25 admin. Google login, automatic email-link callbacks, password recovery, invitations, Story/Activity authoring, account deletion/export, classroom media, notifications, offline synchronization of real accounts, and AI are not included. Sample content needs qualified editorial review before a public release.
 
-See [architecture decisions](docs/architecture.md). Pushing source code runs the foundation checks; it does not deploy the app or apply database migrations.
+See [architecture decisions](docs/architecture.md) and [V24.3.5 integration details](docs/v24-integration.md). Pushing source code runs the foundation checks; it does not deploy the app or apply database migrations.
+## V25 guide CMS
+
+The V25.0.1 reference has been adapted into the existing mobile app. Guides now open by category, with structured bilingual articles and optional related activities. Run `pnpm admin` for the guide editor after configuring its public Supabase settings and applying the new migration. See [V25 integration](docs/v25-integration.md) and [admin setup](apps/admin/README.md).

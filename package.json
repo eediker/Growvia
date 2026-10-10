@@ -10,7 +10,8 @@
     "android:prebuild": "pnpm --filter @kids-guide/mobile android:prebuild",
     "ios": "pnpm --filter @kids-guide/mobile ios",
     "typecheck": "pnpm --filter @kids-guide/mobile typecheck",
-    "test": "pnpm --filter @kids-guide/mobile test && node --test supabase/tests/rls.test.mjs",
+    "test": "pnpm --filter @kids-guide/mobile test && node --test supabase/tests/rls.test.mjs scripts/standalone-android.test.cjs scripts/admin.test.mjs",
+    "admin": "node scripts/serve-admin.mjs",
     "test:cloud": "node --test supabase/tests/rls.test.mjs",
     "seed:generate": "node scripts/generate-supabase-seed.mjs",
     "export:web": "pnpm --filter @kids-guide/mobile export:web"

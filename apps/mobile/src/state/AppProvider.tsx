@@ -4,15 +4,19 @@ import * as Crypto from 'expo-crypto';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { settings } from '../config/settings';
 import { DemoDatabase } from '../data/offline';
+import { PrototypeStore } from '../data/prototype';
 import { SupabaseService } from '../data/supabase';
 import { AppError, type DataMode, type KidsGuideGateway, type Language, type Persona } from '../domain/models';
 import i18n from '../i18n';
 
 type AppContext = {
+  prototype: PrototypeStore;
   mode: DataMode; persona: Persona; scope: string; gateway: KidsGuideGateway; activeChildId: string | null;
   setActiveChildId: (id: string) => void; setMode: (mode: DataMode) => void; setPersona: (persona: Persona) => void;
   setLanguage: (language: Language) => Promise<void>; resetDemo: () => Promise<void>;
   login: (email: string, password: string) => Promise<void>; logout: () => Promise<void>;
+  signup: (name: string, email: string, password: string) => Promise<'signedIn' | 'confirmationRequired'>;
+  resendConfirmation: (email: string) => Promise<void>;
 };
 const Context = createContext<AppContext | null>(null);
 export const uuid = () => Crypto.randomUUID();
@@ -22,6 +26,7 @@ export function AppProvider({ children }: React.PropsWithChildren) {
     retry: (attempt, error) => attempt < 1 && error instanceof AppError && error.code === 'network', staleTime: 30000,
   }, mutations: { retry: false } } }));
   const [database] = useState(() => new DemoDatabase(AsyncStorage, uuid));
+  const [prototype] = useState(() => new PrototypeStore(AsyncStorage));
   const [cloud] = useState(() => new SupabaseService(async () => (await import('../data/cloudClient')).createCloudClient()));
   const [mode, updateMode] = useState<DataMode>(settings.dataMode);
   const [persona, updatePersona] = useState<Persona>(settings.demo.defaultPersona);
@@ -34,12 +39,19 @@ export function AppProvider({ children }: React.PropsWithChildren) {
   const gateway = useMemo(() => mode === 'offline' ? database.forPersona(persona) : cloud.gateway, [mode, persona, database, cloud]);
   const clearContext = () => { queryClient.clear(); setActiveChildId(null); };
   const context: AppContext = {
+    prototype,
     mode, persona, scope, gateway, activeChildId, setActiveChildId,
     setMode: next => { clearContext(); updateMode(next); },
     setPersona: next => { clearContext(); updatePersona(next); },
     async setLanguage(language) { await i18n.changeLanguage(language); await AsyncStorage.setItem('kids-guide.language', language); },
-    async resetDemo() { await database.reset(); clearContext(); setSessionVersion(v => v + 1); },
+    async resetDemo() { await database.reset(); await prototype.reset(); clearContext(); setSessionVersion(v => v + 1); },
     async login(email, password) { await cloud.login(email, password); clearContext(); setSessionVersion(v => v + 1); },
+    async signup(name, email, password) {
+      const result = await cloud.signup(name, email, password);
+      if (result === 'signedIn') { clearContext(); setSessionVersion(v => v + 1); }
+      return result;
+    },
+    resendConfirmation: email => cloud.resendConfirmation(email),
     async logout() { await cloud.logout(); clearContext(); setSessionVersion(v => v + 1); },
   };
   return <QueryClientProvider client={queryClient}><Context.Provider value={context}>{children}</Context.Provider></QueryClientProvider>;

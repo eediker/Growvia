@@ -15,7 +15,11 @@ Expo Router screens call a typed `KidsGuideGateway` through TanStack Query. `App
 
 Startup mode and project settings come from `apps/mobile/appsettings.json`. The current default is online. In-app mode switches last for the session and clear cached account context. They do not upload demo data or synchronize offline edits. Supabase initialization is lazy, so starting in offline mode does not initialize cloud authentication. Token refresh is on demand.
 
-Native sessions use SecureStore with bounded chunks for large tokens. Web sessions use memory and require login after a full page reload. Public connection settings are bundled into the app; a new APK is needed to change them. A different Supabase project has independent users and data.
+Native sessions use SecureStore with bounded chunks for large tokens; browser sessions use localStorage. Startup checks the saved session before displaying welcome or the main app. Passwords are never persisted by the application. Public connection settings are bundled into the app; a new APK is needed to change them. A different Supabase project has independent users and data.
+
+The opening illustration leads to login with signup and offline-demo options, or directly to the area hub when a session is restored. Signup supplies only display-name metadata; database relationships still control teacher access. When Supabase requires email verification, users confirm the email link and return to log in. A signup response without a session never opens the main app. Google login and automatic email-link callbacks are not implemented yet.
+
+The area hub separates My child and My class. Each has its own navigation. Classroom posts retain their activity IDs when opening home activities, and completion preserves the return destination. Additional classroom tools from the V24.3.5 design are explicitly offline prototypes; see [integration decisions](v24-integration.md).
 
 ## Authorization
 

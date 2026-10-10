@@ -34,8 +34,17 @@ before(async () => {
     create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $$;
     create function auth.jwt() returns jsonb language sql stable as $$ select jsonb_build_object('email', 'fixture@example.test') $$;
     grant usage on schema auth, public to authenticated, anon;
+    create schema storage;
+    create table storage.buckets(id text primary key, name text, public boolean, file_size_limit bigint, allowed_mime_types text[]);
+    create table storage.objects(id uuid primary key default gen_random_uuid(), bucket_id text references storage.buckets(id), name text);
+    alter table storage.objects enable row level security;
+    grant usage on schema storage to authenticated, anon;
+    grant select, insert, update, delete on storage.objects to authenticated;
+    grant select on storage.objects to anon;
   `);
   await db.exec(await readFile(new URL('../migrations/202609180001_foundation.sql', import.meta.url), 'utf8'));
+  await db.exec(await readFile(new URL('../migrations/20261010193837_guide_cms.sql', import.meta.url), 'utf8'));
+  await db.exec(await readFile(new URL('../migrations/20261010194836_child_edit.sql', import.meta.url), 'utf8'));
   await db.exec(await readFile(new URL('../seed.sql', import.meta.url), 'utf8'));
   for (const [id, name] of [[parent, 'Deniz'], [otherParent, 'Alex'], [teacher, 'Elif'], [otherTeacher, 'Sam'], [editor, 'Editor']])
     await db.query('insert into auth.users(id,email,raw_user_meta_data) values($1,$2,$3)', [id, `${name}@example.test`, JSON.stringify({ name, can_publish: true })]);
@@ -50,6 +59,70 @@ before(async () => {
   `);
 });
 after(async () => { await db.close(); });
+
+test('child editing is guardian-only and validates age on direct updates too', async () => {
+  await asUser(parent, async () => {
+    const before = (await scalar('select public.kg_children() as value'))[0];
+    const result = await scalar('select public.kg_update_child($1,$2,$3) as value', [child, ' Ada edited ', before.dateOfBirth]);
+    assert.equal(result.name, 'Ada edited');
+    await assert.rejects(db.query('select public.kg_update_child($1,$2,$3)', [otherChild, 'Forbidden', before.dateOfBirth]), /notFound/);
+    await assert.rejects(db.query("update public.kg_children set date_of_birth = current_date where id = $1", [child]), /invalid/);
+    await db.query('select public.kg_update_child($1,$2,$3)', [child, before.name, before.dateOfBirth]);
+  });
+  await asUser(teacher, async () => {
+    await assert.rejects(db.query("select public.kg_update_child($1,'Forbidden',(current_date - interval '3 years')::date)", [child]), /notFound/);
+  });
+});
+
+test('guide CMS permissions, bilingual blocks, ordering, and immutable icon snapshots', async () => {
+  const guide = 'guide-cms-test';
+  const category = 'cms-test-category';
+  const icon = 'cms-test-icon';
+  const translations = Object.fromEntries(['tr', 'en'].map(language => [language, {
+    title: `CMS ${language}`, summary: 'Structured guide', body: 'Body', materials: [], steps: [], parentTip: '', safetyNote: '',
+    contentBlocks: [{ type: 'heading', text: 'Heading' }, { type: 'paragraph', html: '<strong>Bold</strong>' },
+      { type: 'list', ordered: true, items: ['One'] }, { type: 'table', headers: ['Title'], rows: [['Cell']] },
+      { type: 'image', url: 'https://example.test/image.png', alt: 'Image' }],
+  }]));
+  await asUser(parent, async () => {
+    assert.equal((await scalar('select public.kg_guide_categories() as value')).length, 6);
+    await assert.rejects(db.query("insert into public.kg_guide_categories(id,names) values('forbidden','{\"tr\":\"Test\",\"en\":\"Test\"}')"), /row-level security/);
+    await assert.rejects(db.query("insert into storage.objects(bucket_id,name) values('guide-media','forbidden.png')"), /row-level security/);
+    assert.deepEqual((await db.query("delete from public.kg_content where id = 'guide-five' returning id")).rows, []);
+  });
+  await asUser(editor, async () => {
+    await db.query('insert into public.kg_guide_categories(id,names,sort_order) values($1,$2,5)', [category, JSON.stringify({ tr: 'Test', en: 'Test' })]);
+    await db.query('insert into public.kg_guide_icons(id,name,image_url) values($1,$2,$3)', [icon, 'Test', 'https://example.test/old.png']);
+    await db.query(`insert into public.kg_content(id,kind,status,area,min_age_months,max_age_months,duration_minutes,translations,category_id,icon_id,related_activity_id)
+      values($1,'guide','published','connection',12,95,5,$2,$3,$4,'activity-colors')`, [guide, JSON.stringify(translations), category, icon]);
+    await db.query('update public.kg_guide_icons set image_url = $1 where id = $2', ['https://example.test/new.png', icon]);
+    await db.query('update public.kg_content set sort_order = 3, icon_image_url_snapshot = $1 where id = $2', ['https://example.test/forged.png', guide]);
+    assert.equal((await scalar('select public.kg_content_by_id($1) as value', [guide])).iconUrl, 'https://example.test/old.png');
+    await assert.rejects(db.query('delete from public.kg_guide_icons where id = $1', [icon]), /permission denied/);
+    await assert.rejects(db.query('update public.kg_content set related_activity_id = $1 where id = $2', ['guide-five', guide]), /invalid/);
+    const invalid = structuredClone(translations); invalid.en.contentBlocks = [{ type: 'image', url: 'javascript:alert(1)' }];
+    await assert.rejects(db.query('update public.kg_content set translations = $1 where id = $2', [JSON.stringify(invalid), guide]), /kg_content_valid_blocks/);
+    await db.query("insert into storage.objects(bucket_id,name) values('guide-media','allowed.png')");
+  });
+  await asUser(parent, async () => {
+    const result = await scalar('select public.kg_guide_list($1) as value', [category]);
+    assert.equal(result.total, 1);
+    assert.equal(result.items[0].id, guide);
+    assert.equal(result.items[0].translations.en.contentBlocks.length, 5);
+    assert.equal(result.items[0].relatedActivityId, 'activity-colors');
+    assert.deepEqual((await db.query('update public.kg_guide_icons set name = $1 where id = $2 returning id', ['Forged', icon])).rows, []);
+  });
+  await db.exec('set role anon');
+  try {
+    await assert.rejects(db.query('select public.kg_guide_categories()'), /permission denied/);
+    assert.equal((await db.query("select * from storage.objects where bucket_id = 'guide-media'")).rows.length, 1);
+  } finally { await db.exec('reset role'); }
+  await asUser(editor, async () => {
+    assert.deepEqual((await db.query("delete from public.kg_content where id = 'activity-colors' returning id")).rows, []);
+    await db.query('delete from public.kg_content where id = $1', [guide]);
+    await db.query('delete from public.kg_guide_categories where id = $1', [category]);
+  });
+});
 
 test('anonymous users cannot access tables or application RPCs', async () => {
   await db.exec('set role anon');
